@@ -1,0 +1,130 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backyard Brawl</title>
+<!--
+  =====================================================================
+  index.html: the page STRUCTURE (what is on the screen).
+
+  Backyard Brawl is a free fan game. It is not affiliated with PopCap
+  Games or Electronic Arts; Plants vs. Zombies and its characters
+  belong to them.
+
+  This file only lists the pieces of the page: screens, buttons and
+  empty boxes the game draws into. How they look lives in style.css,
+  and what they do lives in the js/ folder (loaded at the very bottom).
+
+  Note: there is no <!doctype>, <html>, <head> or <body> here on
+  purpose. The Artifact publisher wraps the page in those, and browsers
+  cope fine when you double-click this file to open it. "charset utf-8"
+  keeps symbols displaying correctly in that case, and "viewport" makes
+  it fit a phone screen.
+
+  Screens (only one is visible at a time; the others are `hidden`):
+    #scr-title    title screen
+    #scr-map      the Lawn you walk around
+    #scr-team     choose your team and their moves
+    #scr-battle   a fight
+  Overlays: #overlay (the battle result) and #howto.
+  =====================================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=VT323&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<main id="app">
+  <!-- ===== Title ===== -->
+  <section id="scr-title" class="screen">
+    <pre id="titleArt" class="title-art"></pre>
+    <p class="subtitle">A turn-based Plants vs. Zombies fan game</p>
+    <p class="dim small">Free fan game. Not affiliated with PopCap Games or Electronic Arts.</p>
+    <div class="menu">
+      <button id="btnContinue" hidden>Continue</button>
+      <button id="btnNew">New game</button>
+      <button class="btnHelp">How to play</button>
+      <button class="btnMute">Sound: on</button>
+    </div>
+  </section>
+
+  <!-- ===== The map ===== -->
+  <section id="scr-map" class="screen" hidden>
+    <header class="topbar">
+      <span class="area">THE LAWN</span>
+      <span class="spacer"></span>
+      <button id="btnTeam">Team (T)</button>
+      <button class="btnHelp">How to play</button>
+      <button class="btnMute">Sound: on</button>
+      <button id="btnTitle">Title</button>
+    </header>
+    <div class="mapwrap"><pre id="m-map" class="map"></pre></div>
+    <div id="m-msg" class="msg"></div>
+    <div class="pad">
+      <button data-dir="0,-1" class="up">^</button>
+      <button data-dir="-1,0" class="left">&lt;</button>
+      <button data-dir="1,0" class="right">&gt;</button>
+      <button data-dir="0,1" class="down">v</button>
+    </div>
+  </section>
+
+  <!-- ===== Team ===== -->
+  <section id="scr-team" class="screen" hidden>
+    <header class="topbar">
+      <span class="area">TEAM</span>
+      <span id="t-count" class="dim"></span>
+      <span class="spacer"></span>
+      <button id="btnTeamBack">Back to the Lawn (Esc)</button>
+    </header>
+    <div id="t-msg" class="info"></div>
+    <div class="teamgrid">
+      <div id="t-list" class="tlist"></div>
+      <div id="t-detail" class="tdetail"></div>
+    </div>
+  </section>
+
+  <!-- ===== Battle ===== -->
+  <section id="scr-battle" class="screen" hidden>
+    <header class="topbar">
+      <span id="b-title" class="area"></span>
+      <span id="b-wave" class="dim"></span>
+      <span class="spacer"></span>
+      <span id="b-sun" class="sun"></span>
+      <button id="btnGiveUp">Give up</button>
+    </header>
+    <div class="field">
+      <div id="b-allies" class="side allies"></div>
+      <div id="b-foes" class="side foes"></div>
+    </div>
+    <div id="b-actions" class="actions"></div>
+    <div id="b-log" class="log"></div>
+  </section>
+</main>
+
+<!-- ===== Overlays ===== -->
+<div id="overlay" class="overlay" hidden><div id="overlayBox" class="box"></div></div>
+
+<div id="howto" class="overlay" hidden>
+  <div class="box howto">
+    <h2>How to play</h2>
+    <p><b>The Lawn:</b> walk with the arrow keys, WASD or the on-screen pad. Bump into a red number to fight. Battles block the path, so beat them in order. Some plants join you after certain battles. Read the signs, and keep an eye on the hedges...</p>
+    <p><b>Battles:</b> your team (up to 5 plants) fights waves of zombies. Every round, everyone acts once, fastest first. On a plant's turn, pick a move (click it or press 1 to 4), then click a glowing card if it needs a target.</p>
+    <p><b>Sun:</b> the whole team shares one sun bank. You start with 50 and get 25 more every round; Sunflower makes extra. Basic attacks are free. "Soak up sun" (5) skips a turn for 15 sun.</p>
+    <p><b>Damage</b> = the move's power x the plant's attack / 5. Armor and shields soak damage first, unless a move pierces. Damage types matter: Wal-nut takes less from blunt hits, Chomper rips through armor with sharp ones.</p>
+    <p><b>Leveling:</b> plants learn new moves at levels 3, 6, 8 and 10 (stats never change). Each plant brings 4 moves; pick them on the Team screen (T). Plants heal fully after every battle.</p>
+    <p><b>Tip:</b> click any card in battle to see what it does.</p>
+    <div class="row"><button id="btnHowtoClose">Close (Esc)</button></div>
+  </div>
+</div>
+
+<!-- The scripts, in load order. Each one can use what the ones above it made. -->
+<script src="js/helpers.js"></script>
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/world.js"></script>
+<script src="js/art.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/save.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/render.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/input.js"></script>
+<script src="js/main.js"></script>
