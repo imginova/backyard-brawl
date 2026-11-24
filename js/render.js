@@ -37,6 +37,8 @@ function chipsHtml(u) {
   if (u.skipNext) chips.push('<span class="chip bad">Tired</span>');
   if (u.chargeReady) chips.push('<span class="chip bad">Charge</span>');
   if (u.firstRounds > 0) chips.push('<span class="chip good">Goes first</span>');
+  // Taste test: how many times Chomper has bitten this enemy.
+  if (u.tasted) chips.push(`<span class="chip bad" title="Chomper's hits on it are ${u.tasted * 25}% stronger">Tasted ${u.tasted}</span>`);
   return chips.join('');
 }
 
