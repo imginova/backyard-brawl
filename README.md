@@ -6,7 +6,9 @@ A free, turn-based **Plants vs. Zombies fan game** drawn in ASCII art. Walk acro
 
 ## How to play it
 
-Double-click `index.html`. It opens in your browser; no install needed. Your progress saves in that browser by itself.
+Play it online at **https://imginova.github.io/backyard-brawl/**, or double-click `index.html`. It opens in your browser; no install needed. Your progress saves in that browser by itself.
+
+The website updates by itself every time a change is merged into `main` (see `.github/workflows/deploy.yml` and `tools/build.js`).
 
 ## What's in the folder
 

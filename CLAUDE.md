@@ -7,7 +7,7 @@ This file holds everything a new Claude session, or a person, needs to keep work
 **Backyard Brawl** is a free, turn-based **Plants vs. Zombies fan game** in ASCII art, made on 2026-11-23 from the owner's own design sheet: their plants, movesets, abilities, stats and zombies. You walk a map, fight waves of zombies with a team of up to 5 plants, level up and pick 4 moves per plant.
 
 - **Owner:** the `imginova` GitHub account (Jake Harris's son), who also makes *Bare Bones Custom Night* (`C:\git\bbcn`) and *Lawn Legends* (`C:\git\pvz-rpg`, a different PvZ RPG). They're new to programming: explain changes in plain language and avoid jargon.
-- **Where it lives:** its own folder, `C:\git\backyard-brawl` (owner's choice: "new game", not part of Lawn Legends). It's a local git repository (first commit 2026-11-23) with **no GitHub repo yet**.
+- **Where it lives:** its own folder, `C:\git\backyard-brawl` (owner's choice: "new game", not part of Lawn Legends). Public GitHub repository https://github.com/imginova/backyard-brawl (created by the owner on 2026-11-24); website https://imginova.github.io/backyard-brawl/ (see "Hosting").
 - **Private Artifact link:** https://claude.ai/artifact/RptZCtsoUmiALyKRDiVrbR (only the owner and people they share it with through the page's Share menu can open it).
 - **No build step, no dependencies, no sound files.** `index.html` works when double-clicked.
 
@@ -20,7 +20,7 @@ This file holds everything a new Claude session, or a person, needs to keep work
 ## Working agreements with the owner
 
 - **Make a plan before big features**, and ask about genuinely ambiguous design choices (the owner answers well through multiple-choice questions). Small requests can be done directly.
-- **Commit only when asked.** The owner's other games land changes as pull requests the owner merges on github.com. Once this game has a GitHub repo, do the same: a branch, commits as `imginova <107283216+imginova@users.noreply.github.com>`, and a compare link for the owner (this computer has no `gh` CLI). No work email may appear in files or commits.
+- **Commit only when asked, and land changes with a pull request.** Work on a new branch from the latest `origin/main` (`git fetch` first: the owner may commit in the browser), commit as `imginova <107283216+imginova@users.noreply.github.com>` (set in this repo's local git config), push the branch and give the owner the compare link (`https://github.com/imginova/backyard-brawl/compare/main...<branch>?expand=1`) to click **Create pull request**, then **Merge**. This computer has no `gh` CLI. Never push straight to `main` (the only exception was the very first push into the empty repo). No work email may appear in files or commits.
 - **Never wipe saved progress.** `loadProgress` in `save.js` keeps every saved key, even unknown ones; plants or moves the game doesn't know are skipped when used, never deleted. Test any save change with a fake old save.
 - **After every change, republish the private Artifact link** (see Publishing).
 - **Keep the split by job and keep the comments**, in the same beginner-friendly style.
@@ -92,12 +92,17 @@ No Node.js or Python on this Windows computer. What worked:
 - **Background tabs barely run timers**, so tests replace `later` with a queue and drain it in a loop (`runSync`), with `render = () => {}`. That runs about 400 battles a second.
 - Use `store.set = () => {}` in test tabs so the owner's save in the same origin isn't overwritten.
 
+## Hosting (the public website)
+
+- GitHub Pages at https://imginova.github.io/backyard-brawl/. One-time setting on github.com: repo **Settings → Pages → Source = GitHub Actions**.
+- `.github/workflows/deploy.yml` (copied from Lawn Legends) checks every script on every pull request and push, runs `tools/build.js`, and on a push to `main` deploys `dist/` (gitignored).
+- `tools/build.js` wraps the `index.html` fragment in a real page, splitting it at `<main` (head material before, body after). It was not run locally (no Node.js on this computer); GitHub runs it.
+
 ## Publishing (the private Artifact link)
 
 The Artifact tool only publishes files under the session's working folder or its scratchpad. From a session started in `C:\git\backyard-brawl`, publish `index.html` with `files` mapping `style.css` and all 12 `js/*.js` to the same paths, and `url: https://claude.ai/artifact/RptZCtsoUmiALyKRDiVrbR` (read it first from a new session). The first publish came from a session in `C:\git\bbcn`, which copied the files into its scratchpad first.
 
 ## Not done yet
 
-- No GitHub repo or website (the owner creates the repo on github.com when they want one; then add a Pages deploy like Lawn Legends' `.github/workflows/deploy.yml` and `tools/build.js`).
 - Only one area (the Lawn); the gate promises more.
 - No refights after a battle is won, no shop, no Almanac.
