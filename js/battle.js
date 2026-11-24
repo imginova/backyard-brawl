@@ -24,7 +24,7 @@ function baseUnit(o) {
     uid: ++uidCount, maxHp: o.hp, armorMax: o.armor, st: {}, cd: {}, used: {}, down: false,
     armed: false, blaze: false, airborne: false, leapAt: null, aftershock: false, charged: false,
     skipNext: false, firstRounds: 0, chargeReady: false, mineBy: null, provokedBy: null,
-    lingered: false, armorBroken: false, flash: false,
+    lingered: false, armorBroken: false, flash: false, tasted: 0, spikedBy: null,
   }, o);
 }
 
@@ -185,6 +185,13 @@ function endTurn(u) {
       lingerHeal(u, n);
     }
     if (u.st.burn && !u.down) loseHp(u, Math.max(1, Math.round(u.maxHp * BURN_PART)), 'from burning');
+    // Chomper's Spike weed: a sharp hit from the Chomper that planted it
+    // (even if that Chomper has wilted since). It doesn't count for Taste test.
+    if (u.st.spikes && !u.down && u.spikedBy) {
+      say(`The spikes stab ${u.name}!`);
+      hit(u.spikedBy, u, SPIKE_POWER, { type: 'sharp', noTaste: true, reaction: true });
+      flushTally(u);
+    }
     // Statuses tick down (Stunned is used up by startTurn instead).
     Object.keys(u.st).forEach(k => {
       if (k === 'stun') return;
@@ -193,6 +200,7 @@ function endTurn(u) {
         if (k === 'poison') u.lingered = false;
         if (k === 'armed') u.mineBy = null;
         if (k === 'provoked') u.provokedBy = null;
+        if (k === 'spikes') u.spikedBy = null;
       }
     });
     Object.keys(u.cd).forEach(m => { if (--u.cd[m] <= 0) delete u.cd[m]; });
@@ -217,6 +225,10 @@ function hit(src, t, power, o = {}) {
   if (has(src, 'strongWill')) d *= 2 - src.hp / src.maxHp;   // x1 at full health, up to x2
   if (o.mult) d *= o.mult;
   if (has(t, 'tough') && !['sharp', 'fire', 'explosion'].includes(type)) d *= TOUGH_MULT;
+  if (t.st.brittle) d *= BRITTLE_MULT;
+  // Chomper's Taste test: +25% for every earlier Chomper hit on this enemy.
+  const tastes = has(src, 'tasteTest') && !o.noTaste;
+  if (tastes) d *= 1 + TASTE_STEP * t.tasted;
   d = Math.max(1, Math.round(d));
 
   // Remember mines before the damage: if the target wilts, they still go off.
@@ -225,14 +237,12 @@ function hit(src, t, power, o = {}) {
 
   // Armor soaks damage first, unless the attack pierces.
   //   Heavy (Squash): only half of a blunt hit goes into the armor.
-  //   Iron jaw (Chomper): sharp hits count double against armor.
   let toHp = d, soaked = 0;
   if (t.armor > 0 && !o.pierce) {
     const part = has(src, 'heavy') && type === 'blunt' ? d / 2 : d;
-    const f = has(src, 'ironJaw') && type === 'sharp' ? 2 : 1;
-    soaked = Math.min(t.armor, Math.round(part * f));
+    soaked = Math.min(t.armor, Math.round(part));
     t.armor -= soaked;
-    toHp = Math.max(0, Math.round(d - soaked / f));
+    toHp = Math.max(0, Math.round(d - soaked));
   }
   t.hp -= toHp;
   t.flash = true;
@@ -242,6 +252,7 @@ function hit(src, t, power, o = {}) {
   (type === 'explosion' ? sfx.boom : type === 'electric' ? sfx.zap : sfx.hit)();
   armorCheck(t);
   if (t.hp <= 0) wilt(t);
+  if (tastes) tasted(src, t);
 
   // Blaze: every attack burns.
   if (has(src, 'blaze') && !t.down) addStatus(t, 'burn', 2);
@@ -262,6 +273,12 @@ function hit(src, t, power, o = {}) {
     }
   }
   return toHp + soaked;
+}
+
+// Taste test: count one more Chomper hit on this enemy. The count lasts
+// the whole battle (`tasted` lives on the unit, not in its statuses).
+function tasted(src, t) {
+  if (has(src, 'tasteTest')) t.tasted++;
 }
 
 // Hits are added up per target and written to the log once per move,

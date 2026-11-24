@@ -8,14 +8,15 @@
    Words used a lot:
      power    how strong a move is. Damage = power x attack / 5.
      type     blunt, sharp, fire, explosion, electric or poison. Some
-              abilities care about it (Wal-nut's Tough, Chomper's Iron jaw).
+              abilities care about it (Wal-nut's Tough, Squash's Heavy).
      contact  the attacker touches the target. Mines and Static field
               only go off on contact.
      pierce   goes straight through armor.
      chain N  also hits N more enemies (picked at random) at full power.
      cd       cooldown: how many of the plant's own turns it must wait
               before using that move again.
-     debuff   a bad status: Weak, Slowed, Poison, Burn, Stunned, Provoked.
+     debuff   a bad status: Weak, Brittle, Slowed, Poison, Burn, Spiked,
+              Stunned, Provoked.
    ===================================================================== */
 
 // ---- Status effects ----------------------------------------------------
@@ -29,6 +30,8 @@ const STATUS = {
   armed:    { name: 'Mine',      desc: 'the next enemy that touches it takes an explosion' },
   static:   { name: 'Static',    desc: 'enemies that touch any plant get zapped' },
   weak:     { name: 'Weak',      desc: '30% less damage', bad: true },
+  brittle:  { name: 'Brittle',   desc: 'takes 50% more damage', bad: true },
+  spikes:   { name: 'Spiked',    desc: 'takes a sharp hit at the end of each turn', bad: true },
   slow:     { name: 'Slowed',    desc: 'half speed', bad: true },
   poison:   { name: 'Poison',    desc: 'loses 5% max HP each turn', bad: true },
   burn:     { name: 'Burn',      desc: 'loses 6% max HP each turn', bad: true },
@@ -124,22 +127,23 @@ const MOVES = {
                  use: u => detonate(u) },
 
   // ===== Chomper =====
-  crunch:      { name: 'Crunch', desc: 'A big bite.', target: 'foe', power: 5, type: 'sharp', contact: true },
-  tear_off:    { name: 'Tear off', desc: 'Rips 40 armor off one enemy.', target: 'foe', sun: 25, cd: 2,
-                 ok: (u, t) => t.armor > 0,
-                 use: (u, t) => { const took = Math.min(40, t.armor); t.armor -= took; say(`${u.name} rips ${took} armor off ${t.name}!`); armorCheck(t); } },
-  thrash:      { name: 'Thrash', desc: 'Bites at every enemy.', target: 'allFoes', power: 4, type: 'sharp', contact: true, sun: 25, cd: 2 },
-  // The sheet says "always goes first this round". A move is picked on
-  // the plant's own turn, after the round's order is set, so Snap makes
-  // Chomper go first NEXT round instead.
-  snap:        { name: 'Snap', desc: 'A fast snap. Chomper goes first next round.', target: 'foe', power: 8, type: 'sharp', contact: true, sun: 50, cd: 2,
-                 after: u => { u.firstRounds = Math.max(u.firstRounds, 1); } },
-  hungry:      { name: 'Hungry', desc: 'Power for 2 turns and heal 10%.', target: 'self', sun: 35, cd: 3,
-                 use: u => { addStatus(u, 'power', 2); heal(u, u.maxHp * 0.1); } },
-  gulp_armor:  { name: 'Gulp armor', desc: 'Eats ALL of one enemy\'s armor and keeps it as shield (up to 60).', target: 'foe', sun: 75, cd: 4,
-                 ok: (u, t) => t.armor > 0,
-                 use: (u, t) => { const took = t.armor; t.armor = 0; say(`${u.name} gulps down ${t.name}'s armor!`); armorCheck(t); addArmor(u, Math.min(60, took)); } },
-  jaws:        { name: 'Jaws of the lawn', desc: 'A huge chomp.', target: 'foe', power: 20, type: 'sharp', contact: true, sun: 100, cd: 3 },
+  // Reworked on 2026-11-24 from the owner's new design (the old armor
+  // ripper kit: Crunch, Tear off, Thrash, Snap, Hungry, Gulp armor, Jaws).
+  // Its id isn't 'bite' because the zombies already have a Bite.
+  chomp_bite:  { name: 'Bite', desc: 'A quick bite.', target: 'foe', power: 6, type: 'sharp', contact: true },
+  slobber:     { name: 'Slobber', desc: 'The enemy is Brittle for 2 turns: it takes 50% more damage.', target: 'foe', sun: 25, cd: 2,
+                 use: (u, t) => addStatus(t, 'brittle', 2) },
+  // Goes straight through armor, and works on bosses and rogues too
+  // (owner's choice). It still counts as a hit for Taste test.
+  acid_spit:   { name: 'Acid spit', desc: 'Melts away half of the enemy\'s remaining HP, straight through armor.', target: 'foe', sun: 50, cd: 2,
+                 use: (u, t) => { loseHp(t, Math.max(1, Math.floor(t.hp / 2)), 'to acid'); tasted(u, t); } },
+  double_bite: { name: 'Double bite', desc: 'Two bites. The second one already gets Taste test from the first.', target: 'foe', power: 6, hits: 2, type: 'sharp', contact: true, sun: 50, cd: 3 },
+  // The spikes hit at the end of each of the ENEMY's next 3 turns
+  // (endTurn in battle.js). They don't count for Taste test.
+  spike_weed:  { name: 'Spike weed', desc: 'The enemy is Spiked for 3 turns: a 4-power sharp hit at the end of each of its turns. Doesn\'t count for Taste test.', target: 'foe', sun: 50, cd: 2,
+                 use: (u, t) => { if (addStatus(t, 'spikes', 3)) t.spikedBy = u; } },
+  sharpen:     { name: 'Sharpen', desc: 'Fired up (double damage) for 1 turn.', target: 'self', sun: 75, cd: 3,
+                 use: u => addStatus(u, 'rage', 1) },
 
   // ===== Squash =====
   plop:        { name: 'Plop', desc: 'Plops onto an enemy.', target: 'foe', power: 6, type: 'blunt', contact: true },
@@ -244,9 +248,10 @@ const PLANTS = {
     learn: [[1, 'dig'], [1, 'rearm'], [1, 'explode'], [3, 'spudow'], [6, 'lend_mine'], [8, 'minefield'], [10, 'detonate']],
   },
   chomper: {
-    name: 'Chomper', color: 'c-chomp', hp: 70, atk: 17, spd: 9,
-    passive: { name: 'Iron jaw', desc: 'Sharp attacks do double damage to armor.', ironJaw: true },
-    learn: [[1, 'crunch'], [1, 'tear_off'], [1, 'thrash'], [3, 'snap'], [6, 'hungry'], [8, 'gulp_armor'], [10, 'jaws']],
+    name: 'Chomper', color: 'c-chomp', hp: 70, atk: 16, spd: 7,
+    // No level 8 move in the new design (like Wal-nut).
+    passive: { name: 'Taste test', desc: 'Each of Chomper\'s hits on an enemy makes its next ones on that enemy 25% stronger, for the whole battle.', tasteTest: true },
+    learn: [[1, 'chomp_bite'], [1, 'slobber'], [1, 'acid_spit'], [3, 'double_bite'], [6, 'spike_weed'], [10, 'sharpen']],
   },
   squash: {
     name: 'Squash', color: 'c-squash', hp: 100, atk: 20, spd: 5,
@@ -285,15 +290,15 @@ const ZOMBIES = {
   basic:    { name: 'Zombie', color: 'c-zom', hp: 65, atk: 12, spd: 8, moves: ['bite'], xp: 6,
               desc: 'Shambles up and bites.' },
   cone:     { name: 'Conehead', color: 'c-cone', hp: 65, armor: 80, atk: 12, spd: 8, moves: ['bite'], xp: 8, bare: 'basic',
-              desc: 'A traffic cone soaks 80 damage first. Chomper and piercing attacks get through it fast.' },
+              desc: 'A traffic cone soaks 80 damage first. Piercing attacks go straight through it.' },
   bucket:   { name: 'Buckethead', color: 'c-bucket', hp: 65, armor: 120, atk: 13, spd: 8, moves: ['bite'], xp: 10, bare: 'basic',
-              desc: 'A bucket soaks 120 damage first. Tear it off or go straight through it.' },
+              desc: 'A bucket soaks 120 damage first. Wear it down or go straight through it.' },
   pole:     { name: 'Pole Vaulter', color: 'c-pole', hp: 65, atk: 12, spd: 12, moves: ['bite', 'bound'], xp: 8,
               passive: { name: 'Vault', desc: 'Ignores Taunt and Provoked: it attacks whoever it likes.', vault: true },
               desc: 'Fast, and taunts don\'t work on it. Low health, so hit it hard.' },
   football: { name: 'Football Zombie', color: 'c-foot', hp: 100, armor: 200, atk: 20, spd: 18, moves: ['tackle', 'ball_toss'], xp: 33, boss: true, bare: 'basic',
               passive: { name: 'Charge', desc: 'Its first attack always goes first and does 1.25x damage.', charge: true },
-              desc: 'The Lawn\'s boss. A 200-armor helmet: rip it off or pierce it.' },
+              desc: 'The Lawn\'s boss. A 200-armor helmet: wear it down or pierce it.' },
   // Rogue plants get ROGUE_HP (3x) this HP in battle (see config.js).
   roguebonk:{ name: 'Rogue Bonk Choy', color: 'c-rogue', hp: 150, atk: 30, spd: 15, moves: ['rapid_jab', 'training', 'r_wind_up'], xp: 44, rogue: true,
               passive: { name: 'Strong will', desc: 'Gets stronger the lower its health.', strongWill: true },
