@@ -200,8 +200,10 @@ const MOVES = {
                  use: (u, t) => plague(u, t) },
 
   // ===== Zombie moves (zombies never pay sun) =====
-  // Bite is blunt (owner's choice), so Wal-nut's Tough works on it.
-  bite:        { name: 'Bite', desc: 'Chomp.', target: 'foe', power: 5, type: 'blunt', contact: true },
+  // Bite is sharp (teeth). It was blunt at first so Wal-nut's Tough would
+  // work on it; the owner made it sharp again on 2026-11-24, so Tough no
+  // longer softens zombie bites.
+  bite:        { name: 'Bite', desc: 'Chomp.', target: 'foe', power: 5, type: 'sharp', contact: true },
   bound:       { name: 'Bound', desc: 'Vaults onto a plant.', target: 'foe', power: 8, type: 'blunt', contact: true, cd: 2 },
   tackle:      { name: 'Tackle', desc: 'A full-speed tackle.', target: 'foe', power: 8, type: 'blunt', contact: true },
   ball_toss:   { name: 'Ball toss', desc: 'Throws a ball that bounces to a second plant.', target: 'foe', power: 5, type: 'blunt', chain: 1 },
