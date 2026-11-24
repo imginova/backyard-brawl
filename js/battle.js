@@ -115,7 +115,8 @@ function nextWave() {
 // ---- Rounds and turns -----------------------------------------------------
 function nextRound() {
   B.round++;
-  if (B.round > 1) addSun(SUN_INCOME);
+  // Say it in the log, so the round's sun isn't mistaken for Sunflower's Sunny.
+  if (B.round > 1) { addSun(SUN_INCOME); say(`Round ${B.round}: +${SUN_INCOME} sun.`); }
   const living = [...B.allies, ...B.foes].filter(u => !u.down);
   // Units with `firstRounds` (Snap, Charge) go before everyone else.
   const firsts = living.filter(u => u.firstRounds > 0);

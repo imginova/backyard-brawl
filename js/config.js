@@ -9,7 +9,11 @@
 // The whole team spends from ONE sun counter (owner's choice). Basic
 // attacks are free; stronger moves cost sun.
 const SUN_START = 50;    // sun at the start of a battle
-const SUN_INCOME = 25;   // sun added at the start of every round after the first
+// Sun added at the start of every round after the first. It was 25; the
+// owner lowered it on 2026-11-24 so Sunflower's Sunny matters more. At 10
+// a test bot beat Football Zombie only about 10-17% of the time (90% at
+// 25), so the owner picked 15 (about 34%).
+const SUN_INCOME = 15;
 const SUNNY_SUN = 25;    // Sunflower's "Sunny" ability: extra sun on each of its turns
 const WAIT_SUN = 15;     // "Soak up sun" (skipping a turn) gives this much
 const SUN_MAX = 999;     // the counter never goes above this
