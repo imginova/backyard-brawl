@@ -2,11 +2,18 @@
    save.js: your progress (plants, team, beaten battles, where you are)
    and the rules for leveling up and unlocking plants.
 
-   Progress is saved in the browser under the key "backyardbrawl:save".
+   Progress is saved in the browser under the key "backyardbrawl:save2".
    loadProgress() keeps EVERY key it finds in an old save, even ones it
    doesn't know, so a newer or older version of the game never throws
    anything away.
    ===================================================================== */
+
+// Which saved key holds your progress. It was 'save' until 2026-11-24,
+// when world 1's levels were redone and the owner asked to reset
+// everyone's progress once. Moving to a new key starts everyone fresh,
+// but the old save is NOT deleted: it's still in the browser under
+// "backyardbrawl:save" in case it's ever wanted back.
+const SAVE_KEY = 'save2';
 
 function newProgress() {
   const owned = {};
@@ -32,11 +39,11 @@ function findStart() {
 let progress = newProgress();
 
 function hasSave() {
-  return store.get('save', null) != null;
+  return store.get(SAVE_KEY, null) != null;
 }
 
 function loadProgress() {
-  const saved = store.get('save', null);
+  const saved = store.get(SAVE_KEY, null);
   progress = newProgress();
   if (saved && typeof saved === 'object') {
     // Copy every saved key over the fresh defaults (unknown keys too).
@@ -55,7 +62,7 @@ function teamIds() {
 }
 
 function saveProgress() {
-  store.set('save', progress);
+  store.set(SAVE_KEY, progress);
 }
 
 // ---- Moves --------------------------------------------------------------
