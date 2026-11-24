@@ -7,7 +7,7 @@ This file holds everything a new Claude session, or a person, needs to keep work
 **Backyard Brawl** is a free, turn-based **Plants vs. Zombies fan game** in ASCII art, made on 2026-11-23 from the owner's own design sheet: their plants, movesets, abilities, stats and zombies. You walk a map, fight waves of zombies with a team of up to 5 plants, level up and pick 4 moves per plant.
 
 - **Owner:** the `imginova` GitHub account (Jake Harris's son), who also makes *Bare Bones Custom Night* (`C:\git\bbcn`) and *Lawn Legends* (`C:\git\pvz-rpg`, a different PvZ RPG). They're new to programming: explain changes in plain language and avoid jargon.
-- **Where it lives:** its own folder, `C:\git\backyard-brawl` (owner's choice: "new game", not part of Lawn Legends). It's a local git repository with **no commits and no GitHub repo yet**.
+- **Where it lives:** its own folder, `C:\git\backyard-brawl` (owner's choice: "new game", not part of Lawn Legends). It's a local git repository (first commit 2026-11-23) with **no GitHub repo yet**.
 - **Private Artifact link:** https://claude.ai/artifact/RptZCtsoUmiALyKRDiVrbR (only the owner and people they share it with through the page's Share menu can open it).
 - **No build step, no dependencies, no sound files.** `index.html` works when double-clicked.
 
@@ -98,6 +98,6 @@ The Artifact tool only publishes files under the session's working folder or its
 
 ## Not done yet
 
-- No commits and no GitHub repo or website (the owner creates the repo on github.com when they want one; then add a Pages deploy like Lawn Legends' `.github/workflows/deploy.yml` and `tools/build.js`).
+- No GitHub repo or website (the owner creates the repo on github.com when they want one; then add a Pages deploy like Lawn Legends' `.github/workflows/deploy.yml` and `tools/build.js`).
 - Only one area (the Lawn); the gate promises more.
 - No refights after a battle is won, no shop, no Almanac.
