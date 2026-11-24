@@ -94,7 +94,7 @@ No Node.js or Python on this Windows computer. What worked:
 
 ## Hosting (the public website)
 
-- GitHub Pages at https://imginova.github.io/backyard-brawl/. One-time setting on github.com: repo **Settings → Pages → Source = GitHub Actions**.
+- GitHub Pages at https://imginova.github.io/backyard-brawl/. One-time setting on github.com: repo **Settings → Pages → Source = GitHub Actions**. The first merge (pull request #1) ran before that was set, so its deploy step failed; any later merge (or "Run workflow" on the Actions tab) deploys.
 - `.github/workflows/deploy.yml` (copied from Lawn Legends) checks every script on every pull request and push, runs `tools/build.js`, and on a push to `main` deploys `dist/` (gitignored).
 - `tools/build.js` wraps the `index.html` fragment in a real page, splitting it at `<main` (head material before, body after). It was not run locally (no Node.js on this computer); GitHub runs it.
 
