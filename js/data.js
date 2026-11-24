@@ -272,12 +272,14 @@ const STARTERS = ['peashooter', 'sunflower', 'walnut'];
 // zombie whose drawing to use once the armor is gone. `xp` is what
 // beating it is worth. `boss` and `rogue` make them immune to Smite and
 // resist Choke and Drag down.
+// The three basic zombies (Zombie, Conehead, Buckethead) went from 80 to
+// 65 HP on 2026-11-24 (owner's request).
 const ZOMBIES = {
-  basic:    { name: 'Zombie', color: 'c-zom', hp: 80, atk: 12, spd: 8, moves: ['bite'], xp: 10,
+  basic:    { name: 'Zombie', color: 'c-zom', hp: 65, atk: 12, spd: 8, moves: ['bite'], xp: 10,
               desc: 'Shambles up and bites.' },
-  cone:     { name: 'Conehead', color: 'c-cone', hp: 80, armor: 80, atk: 12, spd: 8, moves: ['bite'], xp: 14, bare: 'basic',
+  cone:     { name: 'Conehead', color: 'c-cone', hp: 65, armor: 80, atk: 12, spd: 8, moves: ['bite'], xp: 14, bare: 'basic',
               desc: 'A traffic cone soaks 80 damage first. Chomper and piercing attacks get through it fast.' },
-  bucket:   { name: 'Buckethead', color: 'c-bucket', hp: 80, armor: 120, atk: 13, spd: 8, moves: ['bite'], xp: 18, bare: 'basic',
+  bucket:   { name: 'Buckethead', color: 'c-bucket', hp: 65, armor: 120, atk: 13, spd: 8, moves: ['bite'], xp: 18, bare: 'basic',
               desc: 'A bucket soaks 120 damage first. Tear it off or go straight through it.' },
   pole:     { name: 'Pole Vaulter', color: 'c-pole', hp: 65, atk: 12, spd: 12, moves: ['bite', 'bound'], xp: 14,
               passive: { name: 'Vault', desc: 'Ignores Taunt and Provoked: it attacks whoever it likes.', vault: true },

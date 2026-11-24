@@ -61,6 +61,8 @@ Two bots, both playing from the game's real rules and running battles synchronou
 
 **Sun income lowered to 15 (2026-11-24):** those numbers were measured at +25 a round. With +15, level-7 random teams and the smart bot: Football Zombie ~34%, Rogue ~29%, secret ~41% (at +25 it was 91% / 42% / 89%). So the Rogue is now about as hard as the boss, not clearly harder.
 
+**Basic zombies down to 65 HP (2026-11-24, owner's request):** Zombie, Conehead and Buckethead went from 80 to 65 HP (armor unchanged). Same test, side by side: boss 41% → 51%, secret 45% → 58%, Rogue about 24% either way, so the Rogue is clearly harder than the boss again. A smart-bot playthrough loses only to the boss (0-5 tries).
+
 **Not checked by a person yet:** how it feels, the sounds, and whether the early battles are too easy (the smart bot never lost one).
 
 ## How the code is organized
