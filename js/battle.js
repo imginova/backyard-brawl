@@ -550,13 +550,15 @@ function aiAct(u) {
 }
 
 // ---- Ending a battle -----------------------------------------------------------
-// Every plant you own gets all the XP, in the team or on the bench.
-function shareXp(amount) {
+// Every plant you own gets all the XP, in the team or on the bench. The
+// plants that fought in the battle (the team) get TEAM_BONUS_XP more.
+function shareXp(amount, bonus) {
   const lines = [];
   if (amount <= 0) return lines;
+  const team = teamIds();
   Object.keys(progress.owned).forEach(id => {
     if (!PLANTS[id]) return;
-    lines.push(...giveXp(id, amount));
+    lines.push(...giveXp(id, team.includes(id) ? amount + bonus : amount));
   });
   return lines;
 }
@@ -566,7 +568,8 @@ function winBattle() {
   B.phase = 'over';
   const first = !progress.beaten[B.key];
   progress.beaten[B.key] = true;
-  const lines = [`+${B.xp} XP for every plant.`, ...shareXp(B.xp)];
+  const bonus = Math.round(B.xp * TEAM_BONUS_XP);
+  const lines = [`+${B.xp} XP for every plant.`, `+${bonus} bonus XP for the plants that fought.`, ...shareXp(B.xp, bonus)];
   if (first && B.def.unlock && unlockPlant(B.def.unlock)) {
     lines.push(`${PLANTS[B.def.unlock].name} joined your garden!`);
     sfx.unlock();

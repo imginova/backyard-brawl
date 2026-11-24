@@ -161,7 +161,10 @@ const MOVES = {
                  use: u => { u.charged = true; say(`${u.name} crackles with charge!`); } },
   arc:         { name: 'Arc', desc: 'Lightning that jumps to 2 more enemies.', target: 'foe', power: 6, type: 'electric', chain: 2, sun: 25, cd: 2 },
   thunderbolt: { name: 'Thunderbolt', desc: 'A big bolt.', target: 'foe', power: 10, type: 'electric', sun: 50, cd: 2 },
-  defib:       { name: 'Defibrillator', desc: 'Brings a wilted plant back at 30% HP.', target: 'deadAlly', sun: 100, once: true,
+  // Defibrillator was once per battle, like Revival blessing. It's much
+  // weaker (one plant at 30% HP), so on 2026-11-24 the owner gave it a
+  // 3-turn cooldown instead: it can be used again later in the battle.
+  defib:       { name: 'Defibrillator', desc: 'Brings a wilted plant back at 30% HP.', target: 'deadAlly', sun: 100, cd: 3,
                  use: (u, t) => revive(t, 0.3) },
   static_field:{ name: 'Static field', desc: 'For 3 turns, enemies that touch any plant take 4 electric.', target: 'self', sun: 50, cd: 4,
                  use: u => addStatus(u, 'static', 3) },
@@ -276,21 +279,23 @@ const STARTERS = ['peashooter', 'sunflower', 'walnut'];
 // resist Choke and Drag down.
 // The three basic zombies (Zombie, Conehead, Buckethead) went from 80 to
 // 65 HP on 2026-11-24 (owner's request).
+// Every zombie's XP was cut to about 55% the same day, so plants reach the
+// world 1 level cap (6) right around the Football Zombie, not long before.
 const ZOMBIES = {
-  basic:    { name: 'Zombie', color: 'c-zom', hp: 65, atk: 12, spd: 8, moves: ['bite'], xp: 10,
+  basic:    { name: 'Zombie', color: 'c-zom', hp: 65, atk: 12, spd: 8, moves: ['bite'], xp: 6,
               desc: 'Shambles up and bites.' },
-  cone:     { name: 'Conehead', color: 'c-cone', hp: 65, armor: 80, atk: 12, spd: 8, moves: ['bite'], xp: 14, bare: 'basic',
+  cone:     { name: 'Conehead', color: 'c-cone', hp: 65, armor: 80, atk: 12, spd: 8, moves: ['bite'], xp: 8, bare: 'basic',
               desc: 'A traffic cone soaks 80 damage first. Chomper and piercing attacks get through it fast.' },
-  bucket:   { name: 'Buckethead', color: 'c-bucket', hp: 65, armor: 120, atk: 13, spd: 8, moves: ['bite'], xp: 18, bare: 'basic',
+  bucket:   { name: 'Buckethead', color: 'c-bucket', hp: 65, armor: 120, atk: 13, spd: 8, moves: ['bite'], xp: 10, bare: 'basic',
               desc: 'A bucket soaks 120 damage first. Tear it off or go straight through it.' },
-  pole:     { name: 'Pole Vaulter', color: 'c-pole', hp: 65, atk: 12, spd: 12, moves: ['bite', 'bound'], xp: 14,
+  pole:     { name: 'Pole Vaulter', color: 'c-pole', hp: 65, atk: 12, spd: 12, moves: ['bite', 'bound'], xp: 8,
               passive: { name: 'Vault', desc: 'Ignores Taunt and Provoked: it attacks whoever it likes.', vault: true },
               desc: 'Fast, and taunts don\'t work on it. Low health, so hit it hard.' },
-  football: { name: 'Football Zombie', color: 'c-foot', hp: 100, armor: 200, atk: 20, spd: 18, moves: ['tackle', 'ball_toss'], xp: 60, boss: true, bare: 'basic',
+  football: { name: 'Football Zombie', color: 'c-foot', hp: 100, armor: 200, atk: 20, spd: 18, moves: ['tackle', 'ball_toss'], xp: 33, boss: true, bare: 'basic',
               passive: { name: 'Charge', desc: 'Its first attack always goes first and does 1.25x damage.', charge: true },
               desc: 'The Lawn\'s boss. A 200-armor helmet: rip it off or pierce it.' },
   // Rogue plants get ROGUE_HP (3x) this HP in battle (see config.js).
-  roguebonk:{ name: 'Rogue Bonk Choy', color: 'c-rogue', hp: 150, atk: 30, spd: 15, moves: ['rapid_jab', 'training', 'r_wind_up'], xp: 80, rogue: true,
+  roguebonk:{ name: 'Rogue Bonk Choy', color: 'c-rogue', hp: 150, atk: 30, spd: 15, moves: ['rapid_jab', 'training', 'r_wind_up'], xp: 44, rogue: true,
               passive: { name: 'Strong will', desc: 'Gets stronger the lower its health.', strongWill: true },
               desc: 'A wild Bonk Choy, stronger than the boss. Beat it to have it join you.' },
 };

@@ -21,21 +21,29 @@ const SUN_MAX = 999;     // the counter never goes above this
 // ---- Team, moves and levels -------------------------------------------
 const MAX_TEAM = 5;      // plants you can bring into a battle
 const MAX_MOVES = 4;     // moves a plant can have equipped at once
-const MAX_LEVEL = 10;
+// The highest level a plant can reach. World 1 (the Lawn) stops at 6
+// (owner, 2026-11-24). Each new world raises it: world 2 to 10, world 3 to
+// 15, then 5 more per world, and its battles give about enough XP to get
+// there. See "Future worlds" in CLAUDE.md for the numbers.
+const MAX_LEVEL = 6;
 // Levels DON'T raise stats: every plant always has the stats from its
-// sheet in data.js. Levels unlock moves (at levels 3, 6, 8 and 10).
-// The plan (owner, 2026-11-24): every new world adds 5 levels (so world 2
-// raises this to 15, world 3 to 20), and its battles give about enough XP
-// to gain those 5 levels. See "Future worlds" in CLAUDE.md for the numbers.
+// sheet in data.js. Levels unlock moves (at levels 3, 6, 8 and 10), so the
+// level 8 and 10 moves come in world 2.
 
 // XP needed to go from `lvl` to `lvl + 1`.
 const xpToNext = lvl => 20 + 15 * lvl;
 // Only WINNING gives XP, and every plant you own gets all of it, even the
 // ones on the bench (owner, 2026-11-24). Before that, losing gave half the
 // XP "for trying" and the bench got 40%.
+// The plants that fought (the team) also get this much extra on top, as a
+// bonus: 0.25 = 25% more (owner, 2026-11-24: "bonus exp to everyone in the
+// battle").
+const TEAM_BONUS_XP = 0.25;
 // A newly unlocked plant joins this many levels below your best plant,
-// so it isn't stuck at level 1 while everyone else is level 8.
-const JOIN_BELOW_BEST = 1;
+// so it isn't stuck at level 1 while everyone else is level 5. It was 1;
+// it's 0 since 2026-11-24, so plants found late still reach the level cap
+// by the end of the world, like everyone else.
+const JOIN_BELOW_BEST = 0;
 
 // ---- Damage -----------------------------------------------------------
 // damage = power x attack / DAMAGE_DIV, then the bonuses below.

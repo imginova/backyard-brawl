@@ -52,7 +52,9 @@ const BATTLES = {
   '5': { name: 'Tool Shed', waves: [['bucket', 'basic'], ['cone', 'cone', 'pole']] },
   '6': { name: 'Hedge Row', waves: [['bucket', 'cone', 'basic'], ['pole', 'pole', 'basic']], unlock: 'squash' },
   '7': { name: 'Vegetable Patch', waves: [['bucket', 'bucket'], ['cone', 'pole', 'cone', 'basic']] },
-  '8': { name: 'Back Fence', waves: [['bucket', 'cone', 'pole', 'basic'], ['bucket', 'bucket', 'pole']], unlock: 'lightningreed' },
+  // Wave 2 had two buckets until world 1 was capped at level 6 (2026-11-24):
+  // plants now get here at level 5, without their level 6 move.
+  '8': { name: 'Back Fence', waves: [['bucket', 'cone', 'pole', 'basic'], ['bucket', 'cone', 'pole']], unlock: 'lightningreed' },
   'B': { name: 'Football Zombie', boss: true, waves: [['cone', 'basic', 'pole'], ['football', 'cone', 'bucket']] },
   'R': { name: 'Rogue Bonk Choy', optional: true, rogue: true, waves: [['pole', 'roguebonk', 'pole']], unlock: 'bonkchoy' },
   'S': { name: 'The Stinky Thicket', optional: true, secret: true,
