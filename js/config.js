@@ -24,11 +24,15 @@ const MAX_MOVES = 4;     // moves a plant can have equipped at once
 const MAX_LEVEL = 10;
 // Levels DON'T raise stats: every plant always has the stats from its
 // sheet in data.js. Levels unlock moves (at levels 3, 6, 8 and 10).
+// The plan (owner, 2026-11-24): every new world adds 5 levels (so world 2
+// raises this to 15, world 3 to 20), and its battles give about enough XP
+// to gain those 5 levels. See "Future worlds" in CLAUDE.md for the numbers.
 
 // XP needed to go from `lvl` to `lvl + 1`.
 const xpToNext = lvl => 20 + 15 * lvl;
-const BENCH_XP = 0.4;    // plants NOT in the team still get 40% of the XP
-const LOSE_XP = 0.5;     // losing a battle still gives half the XP
+// Only WINNING gives XP, and every plant you own gets all of it, even the
+// ones on the bench (owner, 2026-11-24). Before that, losing gave half the
+// XP "for trying" and the bench got 40%.
 // A newly unlocked plant joins this many levels below your best plant,
 // so it isn't stuck at level 1 while everyone else is level 8.
 const JOIN_BELOW_BEST = 1;

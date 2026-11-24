@@ -550,13 +550,13 @@ function aiAct(u) {
 }
 
 // ---- Ending a battle -----------------------------------------------------------
-// The whole team gets the XP; plants on the bench get BENCH_XP of it.
+// Every plant you own gets all the XP, in the team or on the bench.
 function shareXp(amount) {
   const lines = [];
   if (amount <= 0) return lines;
   Object.keys(progress.owned).forEach(id => {
     if (!PLANTS[id]) return;
-    lines.push(...giveXp(id, teamIds().includes(id) ? amount : amount * BENCH_XP));
+    lines.push(...giveXp(id, amount));
   });
   return lines;
 }
@@ -566,7 +566,7 @@ function winBattle() {
   B.phase = 'over';
   const first = !progress.beaten[B.key];
   progress.beaten[B.key] = true;
-  const lines = [`+${B.xp} XP for the team.`, ...shareXp(B.xp)];
+  const lines = [`+${B.xp} XP for every plant.`, ...shareXp(B.xp)];
   if (first && B.def.unlock && unlockPlant(B.def.unlock)) {
     lines.push(`${PLANTS[B.def.unlock].name} joined your garden!`);
     sfx.unlock();
@@ -579,8 +579,8 @@ function winBattle() {
 function loseBattle() {
   B.over = true;
   B.phase = 'over';
-  const xp = Math.round(B.xp * LOSE_XP);
-  const lines = xp ? [`+${xp} XP for the team (half, for trying).`, ...shareXp(xp)] : [];
+  // Losing gives no XP: only beaten battles count.
+  const lines = [];
   saveProgress();
   sfx.lose();
   render();
