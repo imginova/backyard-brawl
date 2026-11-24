@@ -35,7 +35,7 @@ for (const file of scripts) fs.copyFileSync(path.join(root, file), path.join(dis
 // in <body>.
 const split = html.indexOf('<main');
 if (split < 0) throw new Error('index.html has no <main> element to start the page body at.');
-const page = `<!doctype html>
+let page = `<!doctype html>
 <html lang="en">
 <head>
 ${html.slice(0, split)}
@@ -45,6 +45,18 @@ ${html.slice(split)}
 </body>
 </html>
 `;
+
+// "Cache busting": GitHub Pages tells browsers they may keep a saved copy
+// of every file for 10 minutes, so right after an update a player could
+// get the new page but OLD scripts (owner, 2026-11-24: "didn't work for
+// me"). Adding ?v=<version> to each file's link gives every build new
+// addresses, so the browser has no saved copy and downloads the new files.
+// The version is the commit's id on GitHub (GITHUB_SHA), or the time when
+// you build on your own computer.
+const version = (process.env.GITHUB_SHA || String(Date.now())).slice(0, 12);
+page = page
+  .replace('href="style.css"', `href="style.css?v=${version}"`)
+  .replace(/<script src="([^"]+)"/g, `<script src="$1?v=${version}"`);
 fs.writeFileSync(path.join(dist, 'index.html'), page);
 
-console.log(`Built dist/ with ${scripts.length} scripts.`);
+console.log(`Built dist/ with ${scripts.length} scripts (version ${version}).`);

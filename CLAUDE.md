@@ -101,6 +101,7 @@ No Node.js or Python on this Windows computer. What worked:
 - GitHub Pages at https://imginova.github.io/backyard-brawl/. One-time setting on github.com: repo **Settings → Pages → Source = GitHub Actions**. The first merge (pull request #1) ran before that was set, so its deploy step failed; any later merge (or "Run workflow" on the Actions tab) deploys.
 - `.github/workflows/deploy.yml` (copied from Lawn Legends) checks every script on every pull request and push, runs `tools/build.js`, and on a push to `main` deploys `dist/` (gitignored).
 - `tools/build.js` wraps the `index.html` fragment in a real page, splitting it at `<main` (head material before, body after). It was not run locally (no Node.js on this computer); GitHub runs it.
+- **Cache busting** (2026-11-24): GitHub Pages lets browsers keep files for 10 minutes (`Cache-Control: max-age=600`), so after the 65 HP merge the owner still got the old scripts. `build.js` now adds `?v=<first 12 characters of GITHUB_SHA>` to `style.css` and every script link in `dist/index.html`, so each deploy has new file addresses. The page itself can still be cached for up to 10 minutes, so a normal refresh (which re-checks the page) picks up a new version; a hard refresh (Ctrl+Shift+R) always does.
 
 ## Publishing (the private Artifact link)
 
